@@ -1,0 +1,44 @@
+name: Build souper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build souper
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install ninja
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build
+
+      - name: build dependencies
+        run: |
+          ./build_deps.sh Release
+          rm -r third_party/llvm-Release-build
+
+      - name: build souper
+        run: |
+          echo "LD_LIBRARY_PATH=$PWD/third_party/z3-install/lib:$LD_LIBRARY_PATH"
+          echo "LD_LIBRARY_PATH=$PWD/third_party/z3-install/lib:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+
+          cmake \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -B build \
+            -S . \
+            -DCMAKE_C_COMPILER=$PWD/third_party/llvm-Release-install/bin/clang \
+            -DCMAKE_CXX_COMPILER=$PWD/third_party/llvm-Release-install/bin/clang++
+
+          ninja -C build
+
+      - name: upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: souper-build
+          path: |
+            third_party
+            build

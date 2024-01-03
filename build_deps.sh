@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+set -euxo pipefail
+
 # Copyright 2014 The Souper Authors. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
