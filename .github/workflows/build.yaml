@@ -11,9 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: install ninja
+      - name: install dependencies
         run: |
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y ninja-build
+          DEBIAN_FRONTEND=noninteractive \
+            sudo apt-get install -y \
+              ninja-build \
+              re2c
 
       - name: build dependencies
         run: |
