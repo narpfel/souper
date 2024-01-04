@@ -21,7 +21,20 @@ jobs:
       - name: build dependencies
         run: |
           ./build_deps.sh Release
-          rm -r third_party/llvm-Release-build
+
+      - name: remove dependency git repos and build dirs
+        run: |
+          du -hs \
+            third_party/z3 \
+            third_party/z3-build \
+            third_party/llvm-project \
+            third_party/llvm-Release-build
+
+          rm -rf \
+            third_party/z3 \
+            third_party/z3-build \
+            third_party/llvm-project \
+            third_party/llvm-Release-build
 
       - name: build souper
         run: |
@@ -38,10 +51,13 @@ jobs:
 
           ninja -C build
 
-      - name: upload build artifacts
+
+      - name: tar the artifact
+        run: |
+          tar cvf souper-build.tar third_party build
+
+      - name: upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: souper-build
-          path: |
-            third_party
-            build
+          path: souper-build.tar
